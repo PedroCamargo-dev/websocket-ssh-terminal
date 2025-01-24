@@ -26,7 +26,9 @@ interface TerminalInstance {
   fitAddon: FitAddon
   socket: WebSocket
   dimensions: { width: number; height: number }
+  previousDimensions?: { width: number; height: number }
   position: { x: number; y: number }
+  previousPosition?: { x: number; y: number }
   zIndex: number
 }
 
@@ -129,94 +131,66 @@ const ResizableTerminalSSH: FC = () => {
     )
     if (!activeTerminal) return
 
+    let newWidth = activeTerminal.dimensions.width
+    let newHeight = activeTerminal.dimensions.height
+    let newX = activeTerminal.position.x
+    let newY = activeTerminal.position.y
+
+    const maxWidth = window.innerWidth - activeTerminal.position.x
+    const maxHeight = window.innerHeight - activeTerminal.position.y
+    const maxX = window.innerWidth - activeTerminal.dimensions.width
+    const maxY = window.innerHeight - activeTerminal.dimensions.height
+
     if (isResizing) {
-      const newWidth = Math.max(200, e.clientX - activeTerminal.position.x)
-      const newHeight = Math.max(150, e.clientY - activeTerminal.position.y)
-      const maxWidth = window.innerWidth - activeTerminal.position.x
-      const maxHeight = window.innerHeight - activeTerminal.position.y
-
-      setTerminals((prev) =>
-        prev.map((t) =>
-          t.id === activeTerminalId.current
-            ? {
-                ...t,
-                dimensions: {
-                  width: Math.min(newWidth, maxWidth),
-                  height: Math.min(newHeight, maxHeight),
-                },
-              }
-            : t
-        )
+      newWidth = Math.min(
+        Math.max(200, e.clientX - activeTerminal.position.x),
+        maxWidth
       )
-
-      activeTerminal.fitAddon.fit()
-      sendResizeMessage(activeTerminal.terminal, activeTerminal.socket)
+      newHeight = Math.min(
+        Math.max(150, e.clientY - activeTerminal.position.y),
+        maxHeight
+      )
     }
 
     if (isResizingX) {
-      const newWidth = Math.max(200, e.clientX - activeTerminal.position.x)
-      const maxWidth = window.innerWidth - activeTerminal.position.x
-
-      setTerminals((prev) =>
-        prev.map((t) =>
-          t.id === activeTerminalId.current
-            ? {
-                ...t,
-                dimensions: {
-                  ...t.dimensions,
-                  width: Math.min(newWidth, maxWidth),
-                },
-              }
-            : t
-        )
+      newWidth = Math.min(
+        Math.max(200, e.clientX - activeTerminal.position.x),
+        maxWidth
       )
-
-      activeTerminal.fitAddon.fit()
-      sendResizeMessage(activeTerminal.terminal, activeTerminal.socket)
     }
 
     if (isResizingY) {
-      const newHeight = Math.max(150, e.clientY - activeTerminal.position.y)
-      const maxHeight = window.innerHeight - activeTerminal.position.y
-
-      setTerminals((prev) =>
-        prev.map((t) =>
-          t.id === activeTerminalId.current
-            ? {
-                ...t,
-                dimensions: {
-                  ...t.dimensions,
-                  height: Math.min(newHeight, maxHeight),
-                },
-              }
-            : t
-        )
+      newHeight = Math.min(
+        Math.max(150, e.clientY - activeTerminal.position.y),
+        maxHeight
       )
-
-      activeTerminal.fitAddon.fit()
-      sendResizeMessage(activeTerminal.terminal, activeTerminal.socket)
     }
 
     if (isDragging) {
-      const newX = e.clientX - dragOffset.current.x
-      const newY = e.clientY - dragOffset.current.y
-      const maxX = window.innerWidth - activeTerminal.dimensions.width
-      const maxY = window.innerHeight - activeTerminal.dimensions.height
-
-      setTerminals((prev) =>
-        prev.map((t) =>
-          t.id === activeTerminalId.current
-            ? {
-                ...t,
-                position: {
-                  x: Math.min(Math.max(0, newX), maxX),
-                  y: Math.min(Math.max(0, newY), maxY),
-                },
-              }
-            : t
-        )
-      )
+      newX = Math.min(Math.max(0, e.clientX - dragOffset.current.x), maxX)
+      newY = Math.min(Math.max(0, e.clientY - dragOffset.current.y), maxY)
     }
+
+    setTerminals((prev) =>
+      prev.map((t) =>
+        t.id === activeTerminalId.current
+          ? {
+              ...t,
+              dimensions: {
+                width: newWidth,
+                height: newHeight,
+              },
+              position: {
+                x: newX,
+                y: newY,
+              },
+            }
+          : t
+      )
+    )
+
+    activeTerminal.fitAddon.fit()
+    sendResizeMessage(activeTerminal.terminal, activeTerminal.socket)
   }
 
   const handleMouseUp = () => {
@@ -260,9 +234,20 @@ const ResizableTerminalSSH: FC = () => {
           ? {
               ...t,
               dimensions: isFullScreen
-                ? { width: 800, height: 500 }
+                ? terminal.previousDimensions || { width: 800, height: 500 }
                 : { width: window.innerWidth, height: window.innerHeight },
-              position: isFullScreen ? { x: 100, y: 100 } : { x: 0, y: 0 },
+              position: isFullScreen
+                ? terminal.previousPosition || { x: 100, y: 100 }
+                : { x: 0, y: 0 },
+              previousDimensions: isFullScreen
+                ? undefined
+                : {
+                    width: terminal.dimensions.width,
+                    height: terminal.dimensions.height,
+                  },
+              previousPosition: isFullScreen
+                ? undefined
+                : { x: terminal.position.x, y: terminal.position.y },
             }
           : t
       )
@@ -515,7 +500,7 @@ const ResizableTerminalSSH: FC = () => {
         }
       )}
       <div
-        className="absolute bottom-0 right-0 flex h-12 w-full items-center overflow-x-hidden bg-white bg-opacity-10 bg-clip-padding p-2 text-white backdrop-blur backdrop-filter"
+        className="absolute bottom-0 right-0 flex min-h-12 w-full items-center overflow-x-hidden bg-white bg-opacity-10 bg-clip-padding p-2 text-white backdrop-blur backdrop-filter"
         style={{
           zIndex: maxZIndex + 3,
         }}
