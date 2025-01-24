@@ -45,6 +45,8 @@ const ResizableTerminalSSH: FC = () => {
   const [terminals, setTerminals] = useState<TerminalInstance[]>([])
   const dragOffset = useRef({ x: 0, y: 0 })
   const activeTerminalId = useRef<string | null>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [showScrollButtons, setShowScrollButtons] = useState(false)
 
   const generateUniqueId = () => {
     terminalIdCounter.current += 1
@@ -244,49 +246,27 @@ const ResizableTerminalSSH: FC = () => {
     }
   }
 
-  const handleResizeToDefault = (id: string) => {
-    setTerminals((prev) =>
-      prev.map((t) =>
-        t.id === id ? { ...t, dimensions: { width: 200, height: 150 } } : t
-      )
-    )
-  }
-
   const handleResizeWindow = (id: string) => {
     const terminal = terminals.find((t) => t.id === id)
     if (!terminal) return
 
-    if (
+    const isFullScreen =
       window.innerWidth === terminal.dimensions.width &&
       window.innerHeight === terminal.dimensions.height
-    ) {
-      setTerminals((prev) =>
-        prev.map((t) =>
-          t.id === id
-            ? {
-                ...t,
-                dimensions: { width: 800, height: 500 },
-                position: { x: 100, y: 100 },
-              }
-            : t
-        )
+
+    setTerminals((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? {
+              ...t,
+              dimensions: isFullScreen
+                ? { width: 800, height: 500 }
+                : { width: window.innerWidth, height: window.innerHeight },
+              position: isFullScreen ? { x: 100, y: 100 } : { x: 0, y: 0 },
+            }
+          : t
       )
-    } else {
-      setTerminals((prev) =>
-        prev.map((t) =>
-          t.id === id
-            ? {
-                ...t,
-                dimensions: {
-                  width: window.innerWidth,
-                  height: window.innerHeight,
-                },
-                position: { x: 0, y: 0 },
-              }
-            : t
-        )
-      )
-    }
+    )
   }
 
   const openNewConnection = (
@@ -401,9 +381,6 @@ const ResizableTerminalSSH: FC = () => {
     }
   }
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [showScrollButtons, setShowScrollButtons] = useState(false)
-
   const checkScrollVisibility = () => {
     const container = scrollContainerRef.current
     if (!container) return
@@ -482,7 +459,11 @@ const ResizableTerminalSSH: FC = () => {
                 <div>
                   <button
                     className="mr-2 border-none bg-transparent text-white"
-                    onClick={() => handleResizeToDefault(id)}
+                    onClick={() =>
+                      toggleMinimizeConnection(
+                        connections.map((c) => c.id).includes(id) ? id : ''
+                      )
+                    }
                   >
                     &#x1F5D5;
                   </button>
