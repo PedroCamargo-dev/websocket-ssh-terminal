@@ -512,6 +512,7 @@ const ResizableTerminalSSH: FC = () => {
                 }}
                 style={{
                   flex: 1,
+                  height: 'calc(100% - 44px)',
                   overflow: 'hidden',
                   display: isMinimized ? 'none' : 'block',
                 }}
