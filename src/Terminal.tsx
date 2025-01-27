@@ -319,6 +319,7 @@ const ResizableTerminalSSH: FC = () => {
 
     newSocket.onclose = () => {
       setShowModal(true)
+      message && setMessage(undefined)
       handleSocketClose(terminalId)
     }
 
