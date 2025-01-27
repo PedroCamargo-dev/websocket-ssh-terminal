@@ -45,6 +45,10 @@ const ResizableTerminalSSH: FC = () => {
   const [isDragging, setIsDragging] = useState(false)
   const [connections, setConnections] = useState<Connection[]>([])
   const [terminals, setTerminals] = useState<TerminalInstance[]>([])
+  const [message, setMessage] = useState<{
+    type: 'error'
+    content: string
+  }>()
   const dragOffset = useRef({ x: 0, y: 0 })
   const activeTerminalId = useRef<string | null>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -288,6 +292,7 @@ const ResizableTerminalSSH: FC = () => {
     const newFitAddon = new FitAddon()
 
     newSocket.onopen = () => {
+      setShowModal(false)
       newSocket.send(
         JSON.stringify({
           type: 'config',
@@ -302,12 +307,18 @@ const ResizableTerminalSSH: FC = () => {
 
     newSocket.onmessage = (event: MessageEvent<string>) => {
       const message = JSON.parse(event.data)
+
+      if (message.type === 'error') {
+        setMessage({ type: 'error', content: message.content })
+      }
+
       if (message.type === 'output') {
         newTerminal.write(message.content)
       }
     }
 
     newSocket.onclose = () => {
+      setShowModal(true)
       handleSocketClose(terminalId)
     }
 
@@ -355,8 +366,6 @@ const ResizableTerminalSSH: FC = () => {
       } else {
         openNewConnection(host, port, user, password)
       }
-
-      setShowModal(false)
     } catch (error) {
       console.error('Failed to submit connection:', error)
     } finally {
@@ -580,6 +589,13 @@ const ResizableTerminalSSH: FC = () => {
       >
         <div className="flex max-h-full w-full max-w-md flex-col gap-4 rounded-xl bg-white bg-opacity-10 bg-clip-padding p-8 text-white backdrop-blur-xl backdrop-filter">
           <h1 className="text-center text-2xl font-bold">Open Connection</h1>
+          {message && (
+            <div
+              className={`rounded-md ${message.type === 'error' ? 'bg-red-500' : 'bg-sky-500'} bg-opacity-20 p-2 text-sm ${message.type === 'error' ? 'text-red-100' : 'text-sky-100'}`}
+            >
+              {message.content}
+            </div>
+          )}
           <form
             className="flex h-full flex-col gap-2 overflow-y-auto px-2 py-2"
             onSubmit={onSubmitConnection}
@@ -688,7 +704,10 @@ const ResizableTerminalSSH: FC = () => {
               <button
                 type="button"
                 className="w-full rounded-xl border-none bg-red-500 bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setMessage(undefined)
+                  setShowModal(false)
+                }}
               >
                 Close
               </button>
