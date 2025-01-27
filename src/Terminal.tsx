@@ -50,6 +50,21 @@ const ResizableTerminalSSH: FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showScrollButtons, setShowScrollButtons] = useState(false)
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'o') {
+        e.preventDefault()
+        setShowModal((prev: boolean) => !prev)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   const generateUniqueId = () => {
     terminalIdCounter.current += 1
     return `terminal-${terminalIdCounter.current}`
@@ -72,21 +87,8 @@ const ResizableTerminalSSH: FC = () => {
     const rows = terminal.rows
     const cols = terminal.cols
 
-    console.log('Rows:', rows, 'Cols:', cols)
-
     if (socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({ type: 'resize', rows, cols }))
-    }
-  }
-
-  const handleSocketClose = (socket: WebSocket) => {
-    const terminalInstance = terminals.find((t) => t.socket === socket)
-    if (terminalInstance) {
-      terminalInstance.terminal.write('\r\nConnection closed.\r\n')
-      setConnections((prev) =>
-        prev.filter((conn) => conn.id !== terminalInstance.id)
-      )
-      setTerminals((prev) => prev.filter((t) => t.id !== terminalInstance.id))
     }
   }
 
@@ -213,10 +215,15 @@ const ResizableTerminalSSH: FC = () => {
 
   const handleCloseTerminal = (id: string) => {
     const terminalInstance = terminals.find((t) => t.id === id)
+
     if (terminalInstance) {
       terminalInstance.socket.close()
-      setTerminals((prev) => prev.filter((t) => t.id !== id))
-      setConnections((prev) => prev.filter((conn) => conn.id !== id))
+      setTerminals((prev) => {
+        return prev.filter((t) => t.id !== id)
+      })
+      setConnections((prev) => {
+        return prev.filter((conn) => conn.id !== id)
+      })
     }
   }
 
@@ -252,6 +259,11 @@ const ResizableTerminalSSH: FC = () => {
           : t
       )
     )
+  }
+
+  const handleSocketClose = (terminalId: string) => {
+    setTerminals((prev) => prev.filter((t) => t.id !== terminalId))
+    setConnections((prev) => prev.filter((conn) => conn.id !== terminalId))
   }
 
   const openNewConnection = (
@@ -295,7 +307,9 @@ const ResizableTerminalSSH: FC = () => {
       }
     }
 
-    newSocket.onclose = () => handleSocketClose(newSocket)
+    newSocket.onclose = () => {
+      handleSocketClose(terminalId)
+    }
 
     newTerminal.onData((data) => {
       if (newSocket.readyState === WebSocket.OPEN) {
@@ -578,7 +592,8 @@ const ResizableTerminalSSH: FC = () => {
                 id="host"
                 type="text"
                 name="host"
-                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
+                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 focus:bg-opacity-20"
+                autoFocus
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -590,7 +605,7 @@ const ResizableTerminalSSH: FC = () => {
                 type="number"
                 name="port"
                 defaultValue={22}
-                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
+                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 focus:bg-opacity-20"
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -601,7 +616,7 @@ const ResizableTerminalSSH: FC = () => {
                 id="user"
                 type="text"
                 name="user"
-                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
+                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 focus:bg-opacity-20"
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -611,7 +626,7 @@ const ResizableTerminalSSH: FC = () => {
               <select
                 id="authMethod"
                 name="authMethod"
-                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
+                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 focus:bg-opacity-20"
                 onChange={(e) => {
                   const authMethod = e.target.value
                   setAuthMethod(authMethod)
