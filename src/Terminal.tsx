@@ -10,7 +10,8 @@ import {
 import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import '@xterm/xterm/css/xterm.css'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Maximize, Minus, X } from 'lucide-react'
+import { Button, Input, Select, Textarea } from './core/components/atoms'
 
 interface Connection {
   id: string
@@ -163,6 +164,16 @@ const ResizableTerminalSSH: FC = () => {
         Math.max(200, e.clientX - activeTerminal.position.x),
         maxWidth
       )
+      if (
+        e.clientX <
+        activeTerminal.position.x + activeTerminal.dimensions.width / 2
+      ) {
+        newX = Math.min(Math.max(0, e.clientX), maxX)
+        newWidth =
+          activeTerminal.position.x +
+          activeTerminal.dimensions.width -
+          e.clientX
+      }
     }
 
     if (isResizingY) {
@@ -170,6 +181,16 @@ const ResizableTerminalSSH: FC = () => {
         Math.max(150, e.clientY - activeTerminal.position.y),
         maxHeight
       )
+      if (
+        e.clientY <
+        activeTerminal.position.y + activeTerminal.dimensions.height / 2
+      ) {
+        newY = Math.min(Math.max(0, e.clientY), maxY)
+        newHeight =
+          activeTerminal.position.y +
+          activeTerminal.dimensions.height -
+          e.clientY
+      }
     }
 
     if (isDragging) {
@@ -429,8 +450,18 @@ const ResizableTerminalSSH: FC = () => {
   return (
     <>
       {terminals.map(
-        ({ id, terminal, fitAddon, socket, dimensions, position, zIndex }) => {
-          const connection = connections.find((conn) => conn.id === id)
+        ({
+          id,
+          terminal,
+          fitAddon,
+          socket,
+          dimensions,
+          position,
+          zIndex,
+        }: TerminalInstance) => {
+          const connection = connections.find(
+            (conn: Connection) => conn.id === id
+          )
           const isMinimized = connection?.isMinimized
 
           return (
@@ -465,29 +496,29 @@ const ResizableTerminalSSH: FC = () => {
                     ? `${connection.user}@${connection.host}:${connection.port}`
                     : 'Terminal'}
                 </span>
-                <div>
-                  <button
-                    className="mr-2 border-none bg-transparent text-white"
+                <div className="mt-0.5 flex items-center gap-3">
+                  <Button
+                    className="bg-transparent text-white"
                     onClick={() =>
                       toggleMinimizeConnection(
                         connections.map((c) => c.id).includes(id) ? id : ''
                       )
                     }
                   >
-                    &#x1F5D5;
-                  </button>
-                  <button
-                    className="mr-2 border-none bg-transparent text-white"
+                    <Minus size={16} />
+                  </Button>
+                  <Button
+                    className="bg-transparent text-white"
                     onClick={() => handleResizeWindow(id)}
                   >
-                    &#x1F5D6;
-                  </button>
-                  <button
-                    className="border-none bg-transparent text-white"
+                    <Maximize size={16} />
+                  </Button>
+                  <Button
+                    className="bg-transparent text-white"
                     onClick={() => handleCloseTerminal(id)}
                   >
-                    &#x2715;
-                  </button>
+                    <X size={16} />
+                  </Button>
                 </div>
               </div>
               <div
@@ -508,15 +539,23 @@ const ResizableTerminalSSH: FC = () => {
                 }}
               ></div>
               <div
-                className="absolute bottom-0 right-0 z-10 h-2.5 w-2.5 cursor-se-resize bg-transparent"
+                className="absolute right-0 bottom-0 z-10 h-2.5 w-2.5 cursor-se-resize bg-transparent"
                 onMouseDown={(e) => handleMouseDownResize(e, id)}
               ></div>
               <div
-                className="absolute right-0 top-0 h-full w-2.5 cursor-e-resize bg-transparent"
+                className="absolute top-0 right-0 h-full w-2.5 cursor-e-resize bg-transparent"
+                onMouseDown={(e) => handleMouseDownResizeX(e, id)}
+              ></div>
+              <div
+                className="absolute top-0 left-0 h-full w-2.5 cursor-e-resize bg-transparent"
                 onMouseDown={(e) => handleMouseDownResizeX(e, id)}
               ></div>
               <div
                 className="absolute bottom-0 left-0 h-2.5 w-full cursor-s-resize bg-transparent"
+                onMouseDown={(e) => handleMouseDownResizeY(e, id)}
+              ></div>
+              <div
+                className="absolute top-0 right-0 h-2.5 w-full cursor-s-resize bg-transparent"
                 onMouseDown={(e) => handleMouseDownResizeY(e, id)}
               ></div>
             </div>
@@ -524,21 +563,21 @@ const ResizableTerminalSSH: FC = () => {
         }
       )}
       <div
-        className="absolute bottom-0 right-0 flex min-h-12 w-full items-center overflow-x-hidden bg-white bg-opacity-10 bg-clip-padding p-2 text-white backdrop-blur backdrop-filter"
+        className="bg-opacity-10 absolute right-0 bottom-0 flex min-h-12 w-full items-center overflow-x-hidden bg-white bg-clip-padding p-2 text-white backdrop-blur-lg backdrop-sepia-0"
         style={{
           zIndex: maxZIndex + 3,
         }}
       >
         <div className="flex w-full items-center gap-2 px-4">
           <button
-            className="min-w-52 rounded-md border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
+            className="bg-opacity-10 hover:bg-opacity-20 min-w-52 rounded-md border-none bg-white p-2 text-white transition-all duration-200 outline-none"
             onClick={() => setShowModal((prev: boolean) => !prev)}
           >
             Open Connection SSH
           </button>
           {showScrollButtons && (
             <button
-              className="rounded-md border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
+              className="bg-opacity-10 hover:bg-opacity-20 rounded-md border-none bg-white p-2 text-white transition-all duration-200 outline-none"
               onClick={() => scrollContainer(-400)}
             >
               <ChevronLeft />
@@ -558,8 +597,8 @@ const ResizableTerminalSSH: FC = () => {
                 key={conn.id}
                 className={`flex items-center rounded-md px-3.5 py-2 transition-all duration-200 hover:cursor-pointer ${
                   conn.isMinimized
-                    ? 'bg-white bg-opacity-10 hover:bg-opacity-30'
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-10'
+                    ? 'bg-opacity-10 hover:bg-opacity-30 bg-white'
+                    : 'bg-opacity-20 hover:bg-opacity-10 bg-white'
                 }`}
                 onClick={() => toggleMinimizeConnection(conn.id)}
                 aria-hidden="true"
@@ -572,7 +611,7 @@ const ResizableTerminalSSH: FC = () => {
           </div>
           {showScrollButtons && (
             <button
-              className="rounded-md border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
+              className="bg-opacity-10 hover:bg-opacity-20 rounded-md border-none bg-white p-2 text-white transition-all duration-200 outline-none"
               onClick={() => scrollContainer(400)}
             >
               <ChevronRight />
@@ -588,7 +627,7 @@ const ResizableTerminalSSH: FC = () => {
           zIndex: maxZIndex + 2,
         }}
       >
-        <div className="flex max-h-full w-full max-w-md flex-col gap-4 rounded-xl bg-white bg-opacity-10 bg-clip-padding p-8 text-white backdrop-blur-xl backdrop-filter">
+        <div className="bg-opacity-10 flex max-h-full w-full max-w-md flex-col gap-4 rounded-xl bg-white bg-clip-padding p-8 text-white backdrop-blur-xl backdrop-sepia-0">
           <h1 className="text-center text-2xl font-bold">Open Connection</h1>
           {message && (
             <div
@@ -601,117 +640,66 @@ const ResizableTerminalSSH: FC = () => {
             className="flex h-full flex-col gap-2 overflow-y-auto px-2 py-2"
             onSubmit={onSubmitConnection}
           >
-            <div className="flex flex-col gap-1">
-              <label htmlFor="host" className="font-medium">
-                Host
-              </label>
-              <input
-                id="host"
-                type="text"
-                name="host"
-                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 focus:bg-opacity-20"
-                autoFocus
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="port" className="font-medium">
-                Port
-              </label>
-              <input
-                id="port"
-                type="number"
-                name="port"
-                defaultValue={22}
-                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 focus:bg-opacity-20"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="user" className="font-medium">
-                User
-              </label>
-              <input
-                id="user"
-                type="text"
-                name="user"
-                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 focus:bg-opacity-20"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="authMethod" className="font-medium">
-                Authentication Method
-              </label>
-              <select
-                id="authMethod"
-                name="authMethod"
-                className="rounded-xl border-none bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 focus:bg-opacity-20"
-                onChange={(e) => {
-                  const authMethod = e.target.value
-                  setAuthMethod(authMethod)
-                }}
-              >
-                <option value="password" className="text-black">
-                  Password
-                </option>
-                <option value="privateKey" className="text-black">
-                  Private Key
-                </option>
-              </select>
-            </div>
+            <Input text="Host" type="text" name="host" variant="translucent" />
+            <Input
+              text="Port"
+              type="number"
+              name="port"
+              variant="translucent"
+            />
+            <Input text="User" type="text" name="user" variant="translucent" />
+            <Select
+              text="Authentication Method"
+              options={[
+                { value: 'password', label: 'Password' },
+                { value: 'privateKey', label: 'Private Key' },
+              ]}
+              onChange={(e) => {
+                const authMethod = e.target.value
+                setAuthMethod(authMethod)
+              }}
+              styleOptions={{
+                color: 'black',
+              }}
+              variant="translucent"
+            />
             {authMethod === 'password' ? (
-              <div className="flex flex-col gap-1">
-                <label htmlFor="password" className="font-medium">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  name="password"
-                  className="rounded-xl border-none bg-transparent bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
-                />
-              </div>
+              <Input
+                text="Password"
+                type="password"
+                name="password"
+                variant="translucent"
+              />
             ) : (
               <div>
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="privateKey" className="font-medium">
-                    Private Key
-                  </label>
-                  <textarea
-                    id="privateKey"
-                    name="privateKey"
-                    className="rounded-xl border-none bg-transparent bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
-                  ></textarea>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="privateKeyFile" className="font-medium">
-                    Private Key File
-                  </label>
-                  <input
-                    id="privateKeyFile"
-                    type="file"
-                    name="privateKeyFile"
-                    className="rounded-xl border-none bg-transparent bg-white bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
-                    onChange={handleFileToText}
-                  />
-                </div>
+                <Textarea
+                  text="Private Key"
+                  name="privateKey"
+                  variant="translucent"
+                />
+                <Input
+                  text="Private Key File"
+                  type="file"
+                  name="privateKeyFile"
+                  variant="translucent"
+                  onChange={handleFileToText}
+                />
               </div>
             )}
             <div className="mt-2 flex w-full justify-between gap-2">
-              <button
-                type="submit"
-                className="w-full rounded-xl border-none bg-blue-700 bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
-              >
+              <Button type="submit" variant="primary">
                 Connect
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="w-full rounded-xl border-none bg-red-500 bg-opacity-10 p-2 text-white outline-none transition-all duration-200 hover:bg-opacity-20"
+                variant="danger"
                 onClick={() => {
                   setMessage(undefined)
                   setShowModal(false)
                 }}
               >
-                Close
-              </button>
+                Cancel
+              </Button>
             </div>
           </form>
         </div>
