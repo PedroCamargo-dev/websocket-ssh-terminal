@@ -450,18 +450,8 @@ const ResizableTerminalSSH: FC = () => {
   return (
     <>
       {terminals.map(
-        ({
-          id,
-          terminal,
-          fitAddon,
-          socket,
-          dimensions,
-          position,
-          zIndex,
-        }: TerminalInstance) => {
-          const connection = connections.find(
-            (conn: Connection) => conn.id === id
-          )
+        ({ id, terminal, fitAddon, socket, dimensions, position, zIndex }) => {
+          const connection = connections.find((conn) => conn.id === id)
           const isMinimized = connection?.isMinimized
 
           return (
@@ -487,7 +477,7 @@ const ResizableTerminalSSH: FC = () => {
               aria-hidden="true"
             >
               <div
-                className={`flex h-8 cursor-move items-center justify-between ${window.innerWidth === dimensions.width ? 'rounded-none' : 'rounded-tl-xl rounded-tr-xl'} bg-[#333] px-2.5 text-white`}
+                className={`flex h-8 cursor-move items-center justify-between ${window.innerWidth === dimensions.width ? 'rounded-none' : 'rounded-tl-xl rounded-tr-xl'} mb-0.5 bg-[#333]/60 px-2.5 text-white`}
                 onMouseDown={(e) => handleMouseDownDrag(e, id)}
                 onDoubleClick={() => handleResizeWindow(id)}
               >
@@ -563,21 +553,21 @@ const ResizableTerminalSSH: FC = () => {
         }
       )}
       <div
-        className="bg-opacity-10 absolute right-0 bottom-0 flex min-h-12 w-full items-center overflow-x-hidden bg-white bg-clip-padding p-2 text-white backdrop-blur-lg backdrop-sepia-0"
+        className="absolute right-0 bottom-0 flex min-h-12 w-full items-center overflow-x-hidden bg-white/10 bg-clip-padding p-2 text-white backdrop-blur-sm backdrop-sepia-0"
         style={{
           zIndex: maxZIndex + 3,
         }}
       >
         <div className="flex w-full items-center gap-2 px-4">
           <button
-            className="bg-opacity-10 hover:bg-opacity-20 min-w-52 rounded-md border-none bg-white p-2 text-white transition-all duration-200 outline-none"
+            className="min-w-52 rounded-md border-none bg-white/10 p-2 text-white outline-hidden transition-all duration-200 hover:bg-white/20"
             onClick={() => setShowModal((prev: boolean) => !prev)}
           >
             Open Connection SSH
           </button>
           {showScrollButtons && (
             <button
-              className="bg-opacity-10 hover:bg-opacity-20 rounded-md border-none bg-white p-2 text-white transition-all duration-200 outline-none"
+              className="rounded-md border-none bg-white/10 p-2 text-white outline-hidden transition-all duration-200 hover:bg-white/20"
               onClick={() => scrollContainer(-400)}
             >
               <ChevronLeft />
@@ -597,8 +587,8 @@ const ResizableTerminalSSH: FC = () => {
                 key={conn.id}
                 className={`flex items-center rounded-md px-3.5 py-2 transition-all duration-200 hover:cursor-pointer ${
                   conn.isMinimized
-                    ? 'bg-opacity-10 hover:bg-opacity-30 bg-white'
-                    : 'bg-opacity-20 hover:bg-opacity-10 bg-white'
+                    ? 'bg-white/10 hover:bg-white/30'
+                    : 'bg-white/20 hover:bg-white/10'
                 }`}
                 onClick={() => toggleMinimizeConnection(conn.id)}
                 aria-hidden="true"
@@ -611,7 +601,7 @@ const ResizableTerminalSSH: FC = () => {
           </div>
           {showScrollButtons && (
             <button
-              className="bg-opacity-10 hover:bg-opacity-20 rounded-md border-none bg-white p-2 text-white transition-all duration-200 outline-none"
+              className="rounded-md border-none bg-white/10 p-2 text-white outline-hidden transition-all duration-200 hover:bg-white/20"
               onClick={() => scrollContainer(400)}
             >
               <ChevronRight />
@@ -627,11 +617,11 @@ const ResizableTerminalSSH: FC = () => {
           zIndex: maxZIndex + 2,
         }}
       >
-        <div className="bg-opacity-10 flex max-h-full w-full max-w-md flex-col gap-4 rounded-xl bg-white bg-clip-padding p-8 text-white backdrop-blur-xl backdrop-sepia-0">
+        <div className="flex max-h-full w-full max-w-md flex-col gap-4 rounded-xl bg-white/10 bg-clip-padding p-8 text-white backdrop-blur-xl backdrop-sepia-0">
           <h1 className="text-center text-2xl font-bold">Open Connection</h1>
           {message && (
             <div
-              className={`rounded-md ${message.type === 'error' ? 'bg-red-500' : 'bg-sky-500'} bg-opacity-20 p-2 text-sm ${message.type === 'error' ? 'text-red-100' : 'text-sky-100'}`}
+              className={`rounded-md ${message.type === 'error' ? 'bg-red-500/20' : 'bg-sky-500/20'} p-2 text-sm ${message.type === 'error' ? 'text-red-100' : 'text-sky-100'}`}
             >
               {message.content}
             </div>

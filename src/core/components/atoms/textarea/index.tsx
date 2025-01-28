@@ -15,8 +15,7 @@ function Textarea({
 }: Readonly<TextareaProps>) {
   const textareaVariantClassName = {
     default: '',
-    translucent:
-      'border-none bg-white bg-opacity-10 text-white focus:bg-opacity-20',
+    translucent: 'border-none bg-white/10 text-white focus:bg-white/20',
   }
 
   return (
@@ -27,7 +26,7 @@ function Textarea({
       <textarea
         id={props.id}
         name={props.name}
-        className={`${textareaVariantClassName[variant]} ${className} rounded-xl p-2 outline-none transition-all duration-200`}
+        className={`${textareaVariantClassName[variant]} ${className} rounded-xl p-2 outline-hidden transition-all duration-200`}
         {...props}
       ></textarea>
     </div>

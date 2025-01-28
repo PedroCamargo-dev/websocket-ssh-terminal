@@ -15,8 +15,7 @@ function Input({
 }: Readonly<InputProps>) {
   const inputVariantClassName = {
     default: '',
-    translucent:
-      'border-none bg-white bg-opacity-10 text-white focus:bg-opacity-20',
+    translucent: 'border-none bg-white/10 text-white focus:bg-white/20',
   }
 
   return (
@@ -30,7 +29,7 @@ function Input({
         id={props.id}
         type={props.type}
         name={props.name}
-        className={`${inputVariantClassName[variant]} ${className} rounded-xl p-2 outline-none transition-all duration-200`}
+        className={`${inputVariantClassName[variant]} ${className} rounded-xl p-2 outline-hidden transition-all duration-200`}
         {...props}
       />
     </div>

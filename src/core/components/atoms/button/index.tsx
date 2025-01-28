@@ -12,15 +12,15 @@ function Button({
 }: Readonly<ButtonProps>) {
   const buttonVariantClassName = {
     default: '',
-    primary: 'bg-blue-700 bg-opacity-10 p-2 text-white hover:bg-opacity-20',
-    secondary: 'bg-white p-2 text-blue-700 hover:bg-gray-100',
-    danger: 'bg-red-500 bg-opacity-10 p-2 text-white hover:bg-opacity-20',
+    primary: 'bg-blue-700/10 p-2 text-white hover:bg-blue-700/20',
+    secondary: 'bg-slate-500/10 text-white hover:bg-slate-500/20',
+    danger: 'bg-red-500/10 p-2 text-white hover:bg-red-500/20',
   }
 
   return (
     <button
       type={props.type ?? 'button'}
-      className={`w-full rounded-xl border-none outline-none transition-all duration-200 ${buttonVariantClassName[variant]} ${className}`}
+      className={`w-full rounded-xl border-none outline-hidden transition-all duration-200 ${buttonVariantClassName[variant]} ${className}`}
       {...props}
     >
       {props.children}

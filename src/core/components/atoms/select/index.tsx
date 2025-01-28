@@ -24,8 +24,7 @@ function Select({
 }: Readonly<SelectProps>) {
   const selectVariantClassName = {
     default: '',
-    translucent:
-      'border-none bg-white bg-opacity-10 text-white focus:bg-opacity-20',
+    translucent: 'border-none bg-white/10 text-white focus:bg-white/20',
   }
 
   return (
@@ -36,7 +35,7 @@ function Select({
       <select
         id={props.id}
         name={props.name}
-        className={`${selectVariantClassName[variant]} ${className} rounded-xl p-2 outline-none transition-all duration-200`}
+        className={`${selectVariantClassName[variant]} ${className} rounded-xl p-2 outline-hidden transition-all duration-200`}
         {...props}
       >
         {options.map((option) => (
