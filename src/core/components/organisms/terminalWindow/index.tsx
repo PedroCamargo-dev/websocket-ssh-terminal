@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from 'react'
+import React from 'react'
 import { Terminal } from '@xterm/xterm'
 import { TerminalControls } from '../../molecules'
 import { IConnection, ITerminalInstance } from '../../../interfaces/components'
 import '@xterm/xterm/css/xterm.css'
+import { useTerminalWindow } from '../../../hooks'
 
 interface TerminalWindowProps extends ITerminalInstance, IConnection {
   onMouseDownDrag: (e: React.MouseEvent, id: string) => void
@@ -40,18 +41,15 @@ function TerminalWindow({
   onClickWindow,
   sendResizeMessage,
 }: Readonly<TerminalWindowProps>) {
-  const terminalRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (terminalRef.current && !terminal.element) {
-      terminal.loadAddon(fitAddon)
-      terminal.open(terminalRef.current)
-      fitAddon.fit()
-      sendResizeMessage(terminal, socket)
-    }
-  }, [terminalRef, terminal, fitAddon, socket, host, port, sendResizeMessage])
-
-  const isFullWidth = window.innerWidth === dimensions.width
+  const { terminalRef, isFullWidth } = useTerminalWindow({
+    terminal,
+    fitAddon,
+    socket,
+    dimensions,
+    host,
+    port,
+    sendResizeMessage,
+  })
 
   return (
     <div

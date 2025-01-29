@@ -13,6 +13,7 @@ import {
   IMessage,
   ITerminalInstance,
 } from '../../../interfaces/components'
+import { useKeyboardShortcuts } from '../../../hooks'
 
 function TerminalPage() {
   const terminalIdCounter = useRef(0)
@@ -30,20 +31,57 @@ function TerminalPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showScrollButtons, setShowScrollButtons] = useState(false)
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'o') {
-        e.preventDefault()
-        setShowModal((prev: boolean) => !prev)
-      }
-    }
+  useKeyboardShortcuts({
+    'Ctrl+Tab': () => {
+      const activeTerminal = terminals.find(
+        (t) => t.id === activeTerminalId.current
+      )
+      if (!activeTerminal) return
 
-    window.addEventListener('keydown', handleKeyDown)
+      const currentIndex = terminals.findIndex(
+        (t) => t.id === activeTerminal.id
+      )
+      const nextIndex =
+        currentIndex === terminals.length - 1 ? 0 : currentIndex + 1
+      const nextTerminal = terminals[nextIndex]
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
+      bringToFront(nextTerminal.id)
+    },
+    'Ctrl+Shift+Tab': () => {
+      const activeTerminal = terminals.find(
+        (t) => t.id === activeTerminalId.current
+      )
+      if (!activeTerminal) return
+
+      const currentIndex = terminals.findIndex(
+        (t) => t.id === activeTerminal.id
+      )
+      const nextIndex =
+        currentIndex === 0 ? terminals.length - 1 : currentIndex - 1
+      const nextTerminal = terminals[nextIndex]
+
+      bringToFront(nextTerminal.id)
+    },
+    'Ctrl+Shift+M': () => {
+      const activeConnection = connections.find(
+        (c) => c.id === activeTerminalId.current
+      )
+      if (!activeConnection) return
+
+      toggleMinimizeConnection(activeConnection.id)
+    },
+    'Ctrl+Shift+Q': () => {
+      const activeTerminal = terminals.find(
+        (t) => t.id === activeTerminalId.current
+      )
+      if (!activeTerminal) return
+
+      handleCloseTerminal(activeTerminal.id)
+    },
+    'Ctrl+Shift+O': () => {
+      setShowModal((prev: boolean) => !prev)
+    },
+  })
 
   const generateUniqueId = () => {
     terminalIdCounter.current += 1
