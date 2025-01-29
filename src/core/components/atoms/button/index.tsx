@@ -19,8 +19,7 @@ function Button({
 
   return (
     <button
-      type={props.type ?? 'button'}
-      className={`w-full rounded-xl border-none outline-hidden transition-all duration-200 ${buttonVariantClassName[variant]} ${className}`}
+      className={`w-full rounded-xl border-none outline-hidden transition-all duration-200 hover:cursor-pointer ${buttonVariantClassName[variant]} ${className}`}
       {...props}
     >
       {props.children}

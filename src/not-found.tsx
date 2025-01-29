@@ -7,6 +7,7 @@ function PageNotFound() {
         <h1 className="text-2xl font-medium">Page Not Found</h1>
         <p>Sorry, the page you are looking for does not exist.</p>
         <Button
+          type="button"
           variant="secondary"
           onClick={() => window.location.replace('/')}
         >

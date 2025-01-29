@@ -32,19 +32,22 @@ function TerminalControls({
       <span>{title}</span>
       <div className="mt-0.5 flex w-24 items-center justify-between">
         <Button
-          className="flex w-min cursor-pointer items-center justify-center rounded-full bg-white/10 p-1.5 text-white hover:bg-white/20"
+          type="button"
+          className="flex w-min items-center justify-center rounded-full bg-white/10 p-1.5 text-white hover:bg-white/20"
           onClick={onMinimize}
         >
           <Minus size={12} />
         </Button>
         <Button
-          className="flex w-min cursor-pointer items-center justify-center rounded-full bg-white/10 p-1.5 text-white hover:bg-white/20"
+          type="button"
+          className="flex w-min items-center justify-center rounded-full bg-white/10 p-1.5 text-white hover:bg-white/20"
           onClick={onMaximize}
         >
           <Maximize size={12} />
         </Button>
         <Button
-          className="flex w-min cursor-pointer items-center justify-center rounded-full bg-white/10 p-1.5 text-white hover:bg-white/20"
+          type="button"
+          className="flex w-min items-center justify-center rounded-full bg-white/10 p-1.5 text-white hover:bg-white/20"
           onClick={onClose}
         >
           <X size={12} />
