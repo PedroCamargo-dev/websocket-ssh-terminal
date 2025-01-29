@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button } from '../../atoms'
-import { Maximize, Minus, X } from 'lucide-react'
+import { Maximize, Minimize, Minus, X } from 'lucide-react'
 
 interface TerminalControlsProps {
   title: string
@@ -43,7 +43,7 @@ function TerminalControls({
           className="flex w-min items-center justify-center rounded-full bg-white/10 p-1.5 text-white hover:bg-white/20"
           onClick={onMaximize}
         >
-          <Maximize size={12} />
+          {!isFullWidth ? <Maximize size={12} /> : <Minimize size={12} />}
         </Button>
         <Button
           type="button"
