@@ -19,6 +19,9 @@ const useKeyboardShortcuts = (shortcuts: ShortcutMap) => {
 
       if (shortcuts[keyCombo]) {
         event.preventDefault()
+
+        console.log(shortcuts[keyCombo](event))
+
         shortcuts[keyCombo](event)
       }
     }

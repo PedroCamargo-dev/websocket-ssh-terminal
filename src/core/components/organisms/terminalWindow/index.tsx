@@ -100,15 +100,7 @@ function TerminalWindow({
         onMouseDown={(e) => handleMouseDownResizeX(e, id)}
       ></div>
       <div
-        className="absolute top-0 left-0 h-full w-2.5 cursor-e-resize bg-transparent"
-        onMouseDown={(e) => handleMouseDownResizeX(e, id)}
-      ></div>
-      <div
         className="absolute bottom-0 left-0 h-2.5 w-full cursor-s-resize bg-transparent"
-        onMouseDown={(e) => handleMouseDownResizeY(e, id)}
-      ></div>
-      <div
-        className="absolute top-0 right-0 h-2.5 w-full cursor-s-resize bg-transparent"
         onMouseDown={(e) => handleMouseDownResizeY(e, id)}
       ></div>
     </div>
