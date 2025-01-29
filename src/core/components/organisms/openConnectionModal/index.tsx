@@ -51,11 +51,32 @@ function OpenConnectionModal({
           className="flex h-full flex-col gap-2 overflow-y-auto px-2 py-2"
           onSubmit={onSubmitConnection}
         >
-          <Input text="Host" type="text" name="host" variant="translucent" />
-          <Input text="Port" type="number" name="port" variant="translucent" />
-          <Input text="User" type="text" name="user" variant="translucent" />
+          <Input
+            id="host"
+            name="host"
+            text="Host"
+            type="text"
+            variant="translucent"
+          />
+          <Input
+            id="port"
+            name="port"
+            text="Port"
+            type="number"
+            variant="translucent"
+            defaultValue={22}
+          />
+          <Input
+            id="user"
+            name="user"
+            text="User"
+            type="text"
+            variant="translucent"
+          />
 
           <Select
+            id="authMethod"
+            name="authMethod"
             text="Authentication Method"
             options={[
               { value: 'password', label: 'Password' },
@@ -72,22 +93,25 @@ function OpenConnectionModal({
 
           {authMethod === 'password' ? (
             <Input
+              id="password"
+              name="password"
               text="Password"
               type="password"
-              name="password"
               variant="translucent"
             />
           ) : (
             <div>
               <Textarea
-                text="Private Key"
+                id="privateKey"
                 name="privateKey"
+                text="Private Key"
                 variant="translucent"
               />
               <Input
+                id="privateKeyFile"
+                name="privateKeyFile"
                 text="Private Key File"
                 type="file"
-                name="privateKeyFile"
                 variant="translucent"
                 onChange={handleFileToText}
               />
