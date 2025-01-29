@@ -60,7 +60,7 @@ const useTerminalManager = () => {
       privateKey: newPrivateKey,
     }
 
-    const newSocket = new WebSocket('ws://localhost:8080/ws')
+    const newSocket = new WebSocket(import.meta.env.VITE_URLSOCKET)
     const newTerminal = new Terminal()
     const newFitAddon = new FitAddon()
 
