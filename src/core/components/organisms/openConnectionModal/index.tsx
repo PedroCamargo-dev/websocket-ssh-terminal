@@ -113,6 +113,7 @@ function OpenConnectionModal({
                 text="Private Key File"
                 type="file"
                 variant="translucent"
+                className="file:mr-2 file:rounded-lg file:border-0 file:bg-gray-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-gray-700 hover:file:bg-gray-100"
                 onChange={handleFileToText}
               />
             </div>
