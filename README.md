@@ -1,50 +1,154 @@
-# React + TypeScript + Vite
+# SSH Terminal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Breve descrição: Aplicação web para gerenciamento e interação com terminais, utilizando uma arquitetura baseada em componentes (Atomic Design) e funcionalidades como redimensionamento, atalhos de teclado e comunicação via WebSocket.
 
-Currently, two official plugins are available:
+## Descrição
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Esta aplicação foi desenvolvida utilizando **React**, **TypeScript** e **Vite**. A estrutura do projeto segue os princípios do Atomic Design, separando componentes em átomos, moléculas, organismos, páginas e templates. Além disso, o projeto conta com hooks customizados para funcionalidades específicas, interfaces e tipos para garantir a integridade dos dados, e utilitários para comunicação em tempo real via WebSocket.
 
-## Expanding the ESLint configuration
+A aplicação ainda possui configuração para containerização com Docker e distribuição com Nginx, facilitando o deploy em diferentes ambientes.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Tecnologias Utilizadas
 
-- Configure the top-level `parserOptions` property like this:
+- **React** – Biblioteca para construção de interfaces.
+- **TypeScript** – Superset do JavaScript com tipagem estática.
+- **Vite** – Ferramenta de build e desenvolvimento.
+- **Docker** – Containerização da aplicação.
+- **Nginx** – Servidor web para distribuição.
+- **WebSocket** – Comunicação em tempo real.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Estrutura do Projeto
+
+A estrutura de pastas está organizada da seguinte forma:
+
+```
+├── src
+│   ├── core
+│   │   ├── components
+│   │   │   ├── atoms/
+│   │   │   │   ├── button/
+│   │   │   │   ├── input/
+│   │   │   │   ├── select/
+│   │   │   │   └── textarea/
+│   │   │   ├── molecules/
+│   │   │   │   ├── connectionCard/
+│   │   │   │   └── terminalControls/
+│   │   │   ├── organisms/
+│   │   │   │   ├── connectionBar/
+│   │   │   │   ├── openConnectionModal/
+│   │   │   │   └── terminalWindow/
+│   │   │   ├── pages/
+│   │   │   │   └── terminalPage/
+│   │   │   └── templates/
+│   │   │       └── terminalTemplate/
+│   │   ├── hooks/
+│   │   ├── interfaces
+│   │   │   └── components/
+│   │   ├── types
+│   │   │   └── components/
+│   │   └── utils
+│   │       └── websocket/
+│   ├── global.d.ts
+│   ├── index.css
+│   ├── main.tsx
+│   ├── not-found.tsx
+│   └── vite-env.d.ts
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+├── docker-compose.yml
+├── Dockerfile
+├── nginx.conf
+├── .env.delelopment
+├── default.conf
+└── vite.config.ts
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+**Observações:**
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- **components/**: Contém todos os componentes da UI organizados segundo o padrão Atomic Design (atoms, molecules, organisms, pages, templates).
+- **hooks/**: Hooks customizados para funcionalidades específicas, como redimensionamento e atalhos de teclado.
+- **interfaces/** e **types/**: Definem as estruturas de dados e contratos utilizados em toda a aplicação.
+- **utils/**: Funções utilitárias, incluindo a integração com WebSocket para comunicação em tempo real.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+## Instalação
+
+### Pré-requisitos
+
+- [Node.js](https://nodejs.org/) (recomenda-se a versão LTS)
+- Docker (caso deseje executar a aplicação em contêiner)
+
+### Passos para instalação
+
+1. **Clone o repositório:**
+
+   ```bash
+   git clone https://github.com/PedroCamargo-dev/websocket-ssh-terminal.git
+   cd websocket-ssh-terminal
+   ```
+
+2. **Instale as dependências:**
+
+   ```bash
+   npm install
+   ```
+
+## Desenvolvimento
+
+Para iniciar a aplicação em modo de desenvolvimento, execute:
+
+```bash
+npm run dev
 ```
+
+A aplicação será iniciada e poderá ser acessada em `http://localhost:8081` (a porta pode variar conforme a configuração no `vite.config.ts`).
+
+## Build para Produção
+
+Para gerar a build otimizada para produção, execute:
+
+```bash
+npm run build
+```
+
+Os arquivos de build serão gerados na pasta `dist`.
+
+## Executando a Aplicação
+
+Após a geração da build, a aplicação pode ser executada localmente com o comando:
+
+```bash
+npm run preview
+```
+
+## Executando com Docker
+
+### Construindo a Imagem
+
+Utilize o `Dockerfile` para construir a imagem da aplicação:
+
+```bash
+docker build -t websocket-ssh-terminal .
+```
+
+### Executando com Docker Compose
+
+O arquivo `docker-compose.yml` facilita o gerenciamento dos contêineres. Para iniciar a aplicação via Docker Compose, execute:
+
+```bash
+docker-compose up --build
+```
+
+Após a inicialização, a aplicação estará disponível conforme as configurações definidas nos arquivos `nginx.conf` e `default.conf`.
+
+## Configuração
+
+- **Variáveis de ambiente:**  
+  Para o ambiente de desenvolvimento, utilize o arquivo `.env.delelopment`. Ajuste as configurações de acordo com o ambiente (desenvolvimento, homologação, produção).
+
+- **Configurações do Vite:**  
+  O arquivo `vite.config.ts` contém as configurações da ferramenta de build e desenvolvimento.
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
