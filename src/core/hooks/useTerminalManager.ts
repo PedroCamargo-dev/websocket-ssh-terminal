@@ -50,6 +50,8 @@ const useTerminalManager = () => {
     newPassword?: string,
     newPrivateKey?: string
   ) => {
+    const socketUrl =
+      window._env_?.VITE_URLSOCKET ?? import.meta.env.VITE_URLSOCKET
     const terminalId = generateUniqueId()
     const newConnection = {
       id: terminalId,
@@ -60,7 +62,7 @@ const useTerminalManager = () => {
       privateKey: newPrivateKey,
     }
 
-    const newSocket = new WebSocket(import.meta.env.VITE_URLSOCKET)
+    const newSocket = new WebSocket(socketUrl)
     const newTerminal = new Terminal()
     const newFitAddon = new FitAddon()
 

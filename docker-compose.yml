@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        ENVIRONMENT: development
+    ports:
+      - "8081:8081"
+    restart: always

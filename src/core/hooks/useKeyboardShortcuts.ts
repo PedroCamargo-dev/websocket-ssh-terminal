@@ -1,34 +1,56 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
-interface ShortcutMap {
-  [keyCombo: string]: (event: KeyboardEvent) => void
+export type ShortcutHandler = (event: KeyboardEvent) => void
+
+export interface ShortcutMap {
+  [shortcut: string]: ShortcutHandler
 }
 
-const useKeyboardShortcuts = (shortcuts: ShortcutMap) => {
+const normalizeKeyCombo = (event: KeyboardEvent): string => {
+  const keys: string[] = []
+
+  if (event.ctrlKey) keys.push('Ctrl')
+  if (event.altKey) keys.push('Alt')
+  if (event.shiftKey) keys.push('Shift')
+  if (event.metaKey) keys.push('Meta')
+
+  let key = event.key
+  if (key.length === 1) {
+    key = key.toUpperCase()
+  } else {
+    key = key.charAt(0).toUpperCase() + key.slice(1)
+  }
+  keys.push(key)
+
+  return keys.join('+')
+}
+
+const useKeyboardShortcuts = (
+  shortcuts: ShortcutMap,
+  target: HTMLElement | Window = window
+) => {
+  const shortcutsRef = useRef<ShortcutMap>(shortcuts)
+
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const keyCombo = [
-        event.ctrlKey ? 'Ctrl' : '',
-        event.metaKey ? 'Meta' : '',
-        event.altKey ? 'Alt' : '',
-        event.shiftKey ? 'Shift' : '',
-        event.key.toUpperCase(),
-      ]
-        .filter(Boolean)
-        .join('+')
+    shortcutsRef.current = shortcuts
+  }, [shortcuts])
 
-      if (shortcuts[keyCombo]) {
-        event.preventDefault()
-
-        console.log(shortcuts[keyCombo](event))
-
-        shortcuts[keyCombo](event)
+  useEffect(() => {
+    const handleKeyDown: EventListener = (event: Event) => {
+      const keyboardEvent = event as KeyboardEvent
+      const keyCombo = normalizeKeyCombo(keyboardEvent)
+      const handler = shortcutsRef.current[keyCombo]
+      if (handler) {
+        keyboardEvent.preventDefault()
+        handler(keyboardEvent)
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [shortcuts])
+    target.addEventListener('keydown', handleKeyDown)
+    return () => {
+      target.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [target])
 }
 
 export { useKeyboardShortcuts }
