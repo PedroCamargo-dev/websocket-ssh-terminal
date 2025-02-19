@@ -36,19 +36,23 @@ const useKeyboardShortcuts = (
   }, [shortcuts])
 
   useEffect(() => {
-    const handleKeyDown: EventListener = (event: Event) => {
-      const keyboardEvent = event as KeyboardEvent
-      const keyCombo = normalizeKeyCombo(keyboardEvent)
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const keyCombo = normalizeKeyCombo(event)
       const handler = shortcutsRef.current[keyCombo]
       if (handler) {
-        keyboardEvent.preventDefault()
-        handler(keyboardEvent)
+        event.preventDefault()
+        event.stopPropagation()
+        handler(event)
       }
     }
 
-    target.addEventListener('keydown', handleKeyDown)
+    target.addEventListener('keydown', handleKeyDown as EventListener, {
+      capture: true,
+    })
     return () => {
-      target.removeEventListener('keydown', handleKeyDown)
+      target.removeEventListener('keydown', handleKeyDown as EventListener, {
+        capture: true,
+      })
     }
   }, [target])
 }

@@ -3,7 +3,7 @@ import { Terminal } from '@xterm/xterm'
 import { TerminalControls } from '../../molecules'
 import { IConnection, ITerminalInstance } from '../../../interfaces/components'
 import '@xterm/xterm/css/xterm.css'
-import { useTerminalWindow } from '../../../hooks'
+import { useKeyboardShortcuts, useTerminalWindow } from '../../../hooks'
 
 interface TerminalWindowProps extends ITerminalInstance, IConnection {
   onMouseDownDrag: (e: React.MouseEvent, id: string) => void
@@ -49,6 +49,25 @@ function TerminalWindow({
     host,
     port,
     sendResizeMessage,
+  })
+
+  useKeyboardShortcuts({
+    'Ctrl+Alt+ArrowUp': (event) => {
+      event.preventDefault()
+      onMaximize(id)
+    },
+    'Ctrl+Shift+ArrowUp': (event) => {
+      event.preventDefault()
+      onMinimize(id)
+    },
+    'Ctrl+Shift+ArrowDown': (event) => {
+      event.preventDefault()
+      onMinimize(id)
+    },
+    'Ctrl+Shift+W': (event) => {
+      event.preventDefault()
+      onClose(id)
+    },
   })
 
   return (

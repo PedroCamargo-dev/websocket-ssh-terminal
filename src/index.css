@@ -27,7 +27,7 @@ html {
   background-position: center;
 }
 
-body {
+* {
   overflow-y: hidden;
 }
 

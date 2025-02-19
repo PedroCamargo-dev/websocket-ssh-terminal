@@ -15,7 +15,6 @@ const useTerminalManager = () => {
   const [connections, setConnections] = useState<IConnection[]>([])
   const [terminals, setTerminals] = useState<ITerminalInstance[]>([])
   const [message, setMessage] = useState<IMessage | undefined>()
-  const activeTerminalId = useRef<string | null>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showScrollButtons, setShowScrollButtons] = useState(false)
 
@@ -233,7 +232,6 @@ const useTerminalManager = () => {
 
   return {
     message,
-    activeTerminalId,
     showScrollButtons,
     connections,
     showModal,
