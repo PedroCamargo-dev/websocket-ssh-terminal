@@ -10,14 +10,6 @@ const useTerminal = () => {
     setShowFirstAccessModal((prev) => !prev)
   }, [])
 
-  useEffect(() => {
-    if (showFirstAccessModal) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'auto'
-    }
-  }, [showFirstAccessModal])
-
   const {
     message,
     showScrollButtons,
@@ -63,6 +55,12 @@ const useTerminal = () => {
     },
   })
 
+  useEffect(() => {
+    if (showModal) {
+      setShowFirstAccessModal(false)
+    }
+  }, [showModal])
+
   return {
     message,
     showScrollButtons,
@@ -71,8 +69,6 @@ const useTerminal = () => {
     terminals,
     maxZIndex,
     showFirstAccessModal,
-    setMaxZIndex,
-    setTerminals,
     setShowModal,
     handleCloseTerminal,
     onSubmitConnection,

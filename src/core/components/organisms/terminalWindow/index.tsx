@@ -64,7 +64,7 @@ function TerminalWindow({
       event.preventDefault()
       onMinimize(id)
     },
-    'Ctrl+Shift+W': (event) => {
+    'Ctrl+Shift+Q': (event) => {
       event.preventDefault()
       onClose(id)
     },
