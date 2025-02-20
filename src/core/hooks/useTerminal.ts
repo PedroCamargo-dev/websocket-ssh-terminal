@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useDragAndResize } from './useDragAndResize'
 import { useKeyboardShortcuts } from './useKeyboardShortcuts'
 import { useTerminalManager } from './useTerminalManager'
@@ -9,14 +9,6 @@ const useTerminal = () => {
   const handleFirstAccessModal = useCallback(() => {
     setShowFirstAccessModal((prev) => !prev)
   }, [])
-
-  useEffect(() => {
-    if (showFirstAccessModal) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'auto'
-    }
-  }, [showFirstAccessModal])
 
   const {
     message,
@@ -71,8 +63,6 @@ const useTerminal = () => {
     terminals,
     maxZIndex,
     showFirstAccessModal,
-    setMaxZIndex,
-    setTerminals,
     setShowModal,
     handleCloseTerminal,
     onSubmitConnection,

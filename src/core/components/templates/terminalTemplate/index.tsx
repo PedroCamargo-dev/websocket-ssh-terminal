@@ -2,6 +2,7 @@ import { Terminal } from '@xterm/xterm'
 import React from 'react'
 import {
   ConnectionBar,
+  HelpShortcutModal,
   OpenConnectionModal,
   TerminalWindow,
 } from '../../organisms'
@@ -18,6 +19,7 @@ interface TerminalTemplateProps {
   showModal: boolean
   message?: IMessage
   showScrollButtons: boolean
+  showFirstAccessModal: boolean
   handleTerminalClick: (id: string) => void
   handleMouseDownDrag: (e: React.MouseEvent, id: string) => void
   handleDoubleClickTitleBar: (id: string) => void
@@ -31,6 +33,7 @@ interface TerminalTemplateProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
   onSubmitConnection: (e: React.FormEvent<HTMLFormElement>) => void
   handleFileToText: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleFirstAccessModal: () => void
 }
 
 function TerminalTemplate({
@@ -40,6 +43,7 @@ function TerminalTemplate({
   showModal,
   message,
   showScrollButtons,
+  showFirstAccessModal,
   handleTerminalClick,
   handleMouseDownDrag,
   handleDoubleClickTitleBar,
@@ -53,6 +57,7 @@ function TerminalTemplate({
   setShowModal,
   onSubmitConnection,
   handleFileToText,
+  handleFirstAccessModal,
 }: Readonly<TerminalTemplateProps>) {
   return (
     <>
@@ -110,6 +115,11 @@ function TerminalTemplate({
           setShowModal(false)
         }}
         handleFileToText={handleFileToText}
+      />
+
+      <HelpShortcutModal
+        showFirstAccessModal={showFirstAccessModal}
+        handleFirstAccessModal={handleFirstAccessModal}
       />
     </>
   )
